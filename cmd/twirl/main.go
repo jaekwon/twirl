@@ -52,6 +52,7 @@ func main() {
 
 func cmdShare(c *cli.Context) {
 	config := cfg.NewMapConfig(nil)
+	config.SetDefault("version", "0.0.0")
 	config.SetDefault("network", "TWIRL")
 	config.SetDefault("input", c.String("input"))
 	config.SetDefault("output", c.String("output"))

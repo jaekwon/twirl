@@ -95,7 +95,7 @@ func makeNodeInfo(config cfg.Config, sw *p2p.Switch, privKey crypto.PrivKeyEd255
 	nodeInfo := &p2p.NodeInfo{
 		PubKey:  privKey.PubKey().(crypto.PubKeyEd25519),
 		Network: config.GetString("network"),
-		Version: "VERSION",
+		Version: config.GetString("version"),
 		Other: []string{
 			Fmt("wire_version=%v", wire.Version),
 			Fmt("p2p_version=%v", p2p.Version),
@@ -134,7 +134,7 @@ func RunNode(config cfg.Config) {
 	if config.GetString("seeds") != "" {
 		seeds := strings.Split(config.GetString("seeds"), ",")
 		// Limit number of seeds?
-		if limit := config.GetInt("seeds_limit"); limit != 0 && len(seeds) > limit {
+		if limit := config.GetInt("seeds-limit"); limit != 0 && len(seeds) > limit {
 			// Shuffle seeds
 			for i := range seeds {
 				j := rand.Intn(i + 1)
