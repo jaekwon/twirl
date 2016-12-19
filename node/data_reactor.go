@@ -148,7 +148,7 @@ func (reactor *DataReactor) Receive(chID byte, src *p2p.Peer, msgBytes []byte) {
 		if parts := reactor.GetParts(); parts != nil {
 			added, _ := parts.AddPart(msg.Part, true)
 			if added {
-				msg := HasPartMessage{
+				msg := &HasPartMessage{
 					Index: msg.Part.Index,
 				}
 				reactor.Switch.Broadcast(DataChannel, struct{ DataMessage }{msg})
@@ -174,7 +174,7 @@ func (reactor *DataReactor) broadcastStateRoutine() {
 		// Maybe broadcast PartsHeaderMessage
 		header := reactor.GetPartsHeader()
 		if !header.IsZero() {
-			msg := PartsHeaderMessage{
+			msg := &PartsHeaderMessage{
 				Header: header,
 			}
 			reactor.Switch.Broadcast(DataChannel, struct{ DataMessage }{msg})
@@ -183,7 +183,7 @@ func (reactor *DataReactor) broadcastStateRoutine() {
 		// Maybe broadcast HasParts
 		parts := reactor.GetParts()
 		if parts != nil {
-			msg := HasPartsMessage{
+			msg := &HasPartsMessage{
 				BitArray: parts.BitArray(),
 			}
 			reactor.Switch.Broadcast(DataChannel, struct{ DataMessage }{msg})
