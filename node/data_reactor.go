@@ -215,6 +215,10 @@ OUTER_LOOP:
 				}
 				if peer.TrySend(DataChannel, struct{ DataMessage }{msg}) {
 					ps.SetHasPart(pick)
+				} else {
+					// Can't send anything... Sleep
+					time.Sleep(peerGossipSleepDuration)
+					continue OUTER_LOOP
 				}
 				continue OUTER_LOOP
 			}
