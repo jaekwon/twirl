@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
+	"github.com/jaekwon/twirl/node"
 	cfg "github.com/tendermint/go-config"
-	"github.com/tendermint/twirl/node"
 )
 
 var (

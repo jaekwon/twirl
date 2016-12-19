@@ -5,12 +5,12 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/jaekwon/twirl/types"
 	. "github.com/tendermint/go-common"
 	cfg "github.com/tendermint/go-config"
 	"github.com/tendermint/go-crypto"
 	"github.com/tendermint/go-p2p"
 	"github.com/tendermint/go-wire"
-	"github.com/tendermint/twirl/types"
 
 	_ "net/http/pprof"
 )

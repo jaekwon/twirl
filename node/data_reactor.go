@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jaekwon/twirl/types"
 	. "github.com/tendermint/go-common"
 	"github.com/tendermint/go-p2p"
 	"github.com/tendermint/go-wire"
-	"github.com/tendermint/twirl/types"
 )
 
 const (
