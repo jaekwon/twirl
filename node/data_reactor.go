@@ -182,6 +182,8 @@ func (reactor *DataReactor) Receive(chID byte, src *p2p.Peer, msgBytes []byte) {
 				}
 			}
 		}
+	case *ShutdownMessage:
+		Exit("Shutting down due to [Shutdown] message")
 	default:
 		// fmt.Println(Fmt("Unknown message type %v", reflect.TypeOf(msg)))
 	}
@@ -325,6 +327,7 @@ const (
 	msgTypeHasParts    = byte(0x02)
 	msgTypeHasPart     = byte(0x03)
 	msgTypePart        = byte(0x04)
+	msgTypeShutdown    = byte(0x05)
 )
 
 type DataMessage interface{}
@@ -335,6 +338,7 @@ var _ = wire.RegisterInterface(
 	wire.ConcreteType{&HasPartsMessage{}, msgTypeHasParts},
 	wire.ConcreteType{&HasPartMessage{}, msgTypeHasPart},
 	wire.ConcreteType{&PartMessage{}, msgTypePart},
+	wire.ConcreteType{&ShutdownMessage{}, msgTypeShutdown},
 )
 
 // TODO: check for unnecessary extra bytes at the end.
@@ -384,4 +388,13 @@ type PartMessage struct {
 
 func (m *PartMessage) String() string {
 	return fmt.Sprintf("[Part %v]", m.Part)
+}
+
+//-------------------------------------
+
+type ShutdownMessage struct {
+}
+
+func (m *ShutdownMessage) String() string {
+	return fmt.Sprintf("[Shutdown]")
 }

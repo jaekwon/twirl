@@ -120,7 +120,7 @@ func makeNodeInfo(config cfg.Config, sw *p2p.Switch, privKey crypto.PrivKeyEd255
 
 //------------------------------------------------------------------------------
 
-func RunNode(config cfg.Config) {
+func RunNode(config cfg.Config, block bool) *Node {
 	// Create & start node
 	n := NewNode(config)
 
@@ -150,10 +150,14 @@ func RunNode(config cfg.Config) {
 		n.sw.DialSeeds(seeds)
 	}
 
-	// Sleep forever and then...
-	TrapSignal(func() {
-		n.Stop()
-	})
+	if block {
+		// Block forever
+		TrapSignal(func() {
+			n.Stop()
+		})
+	}
+
+	return n
 }
 
 func (n *Node) NodeInfo() *p2p.NodeInfo {
@@ -162,6 +166,14 @@ func (n *Node) NodeInfo() *p2p.NodeInfo {
 
 func (n *Node) DialSeeds(seeds []string) {
 	n.sw.DialSeeds(seeds)
+}
+
+// TODO: authenticate or something
+// This will send a message to all peers to shut themselves down.
+func (n *Node) ShutdownPeers() {
+	fmt.Println(Fmt("Broadcasting to around %v peers", n.sw.Peers().Size()))
+	msg := &ShutdownMessage{}
+	n.sw.Broadcast(DataChannel, struct{ DataMessage }{msg})
 }
 
 // Defaults to tcp

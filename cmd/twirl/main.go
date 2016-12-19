@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/codegangsta/cli"
 	"github.com/jaekwon/twirl/node"
@@ -47,14 +48,20 @@ func main() {
 			},
 			Flags: []cli.Flag{inputFlag, outputFlag, seedsFlag, seedsLimitFlag},
 		},
+		{
+			Name:  "shutdown",
+			Usage: "Shutdown all seeds",
+			Action: func(c *cli.Context) error {
+				cmdShutdown(c)
+				return nil
+			},
+			Flags: []cli.Flag{seedsFlag},
+		},
 	}
 	app.Run(os.Args)
 }
 
-func cmdShare(c *cli.Context) {
-
-	logger.SetLogLevel("info") // TODO
-
+func getConfig(c *cli.Context) cfg.Config {
 	config := cfg.NewMapConfig(nil)
 	config.SetDefault("version", "0.0.0")
 	config.SetDefault("network", "TWIRL")
@@ -64,6 +71,20 @@ func cmdShare(c *cli.Context) {
 	config.SetDefault("seeds-limit", c.Int("seeds-limit"))
 	config.SetDefault("node_laddr", "tcp://0.0.0.0:9999")
 	config.SetDefault("skip_upnp", false)
+	return config
+}
 
-	node.RunNode(config)
+func cmdShare(c *cli.Context) {
+	logger.SetLogLevel("info") // TODO
+	config := getConfig(c)
+	node.RunNode(config, true)
+}
+
+func cmdShutdown(c *cli.Context) {
+	logger.SetLogLevel("info") // TODO
+	config := getConfig(c)
+	config.Set("seeds-limit", 0) // don't use this for shutdown
+	node := node.RunNode(config, false)
+	time.Sleep(time.Second * 5)
+	node.ShutdownPeers()
 }
