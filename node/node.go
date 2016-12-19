@@ -30,7 +30,7 @@ func NewNode(config cfg.Config) *Node {
 	// Make DataReactor
 	dataReactor := NewDataReactor()
 	input := config.GetString("input")
-	// output := config.GetString("output")
+	output := config.GetString("output")
 
 	if input != "" {
 		// Load the file
@@ -46,6 +46,10 @@ func NewNode(config cfg.Config) *Node {
 		fmt.Println("PartSet.Header: ", parts.Header())
 
 		dataReactor.SetParts(parts)
+	}
+
+	if output != "" {
+		dataReactor.SetOutputPath(output)
 	}
 
 	// Make p2p network switch

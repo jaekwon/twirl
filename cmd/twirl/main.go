@@ -6,6 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/jaekwon/twirl/node"
 	cfg "github.com/tendermint/go-config"
+	"github.com/tendermint/go-logger"
 )
 
 var (
@@ -51,6 +52,9 @@ func main() {
 }
 
 func cmdShare(c *cli.Context) {
+
+	logger.SetLogLevel("info") // TODO
+
 	config := cfg.NewMapConfig(nil)
 	config.SetDefault("version", "0.0.0")
 	config.SetDefault("network", "TWIRL")

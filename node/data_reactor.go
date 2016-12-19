@@ -3,6 +3,7 @@ package node
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"sync"
 	"time"
@@ -26,9 +27,10 @@ const (
 type DataReactor struct {
 	p2p.BaseReactor // BaseService + p2p.Switch
 
-	mtx    sync.Mutex
-	parts  *types.PartSet
-	header types.PartSetHeader // PartsHeader, if we have it.
+	mtx        sync.Mutex
+	parts      *types.PartSet
+	header     types.PartSetHeader // PartsHeader, if we have it.
+	outputPath string
 }
 
 func NewDataReactor() *DataReactor {
@@ -81,6 +83,18 @@ func (reactor *DataReactor) GetParts() *types.PartSet {
 	reactor.mtx.Lock()
 	defer reactor.mtx.Unlock()
 	return reactor.parts
+}
+
+func (reactor *DataReactor) SetOutputPath(path string) {
+	reactor.mtx.Lock()
+	defer reactor.mtx.Unlock()
+	reactor.outputPath = path
+}
+
+func (reactor *DataReactor) GetOutputPath() string {
+	reactor.mtx.Lock()
+	defer reactor.mtx.Unlock()
+	return reactor.outputPath
 }
 
 // Implements Reactor
@@ -154,9 +168,22 @@ func (reactor *DataReactor) Receive(chID byte, src *p2p.Peer, msgBytes []byte) {
 				reactor.Switch.Broadcast(DataChannel, struct{ DataMessage }{msg})
 			}
 			fmt.Println(Fmt("Added %v of %v", parts.Count(), parts.Total()))
+
+			// If complete, save it
+			if added && parts.IsComplete() {
+				reader := parts.GetReader()
+				data, err := ioutil.ReadAll(reader)
+				if err != nil {
+					Exit(Fmt("Error reading parts: %v", err))
+				}
+				err = WriteFile(reactor.GetOutputPath(), data, 0644)
+				if err != nil {
+					Exit(Fmt("Error writing parts: %v", err))
+				}
+			}
 		}
 	default:
-		fmt.Println(Fmt("Unknown message type %v", reflect.TypeOf(msg)))
+		// fmt.Println(Fmt("Unknown message type %v", reflect.TypeOf(msg)))
 	}
 
 	if err != nil {
